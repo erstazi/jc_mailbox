@@ -3,7 +3,7 @@ local function mailbox_formspec(pos)
 
   return
     "formspec_version[4]" ..
-    "size[10,10]" ..
+    "size[12,11]" ..
 
     "list[nodemeta:" .. spos .. ";main;1,0.4;8,4;]" ..
 
