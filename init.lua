@@ -2,14 +2,14 @@ local function mailbox_formspec(pos)
   local spos = pos.x .. "," .. pos.y .. "," .. pos.z
 
   return
-    "formspec_version[4]" ..
-    "size[12,11]" ..
+    "size[10,11]" ..
 
-    "list[nodemeta:" .. spos .. ";main;1,0.4;8,4;]" ..
+    "list[nodemeta:" .. spos .. ";main;1,0.5;8,4;]" ..
 
-    "button[3,4.6;4,0.8;getitems;Get Items]" ..
+    "button[3,5.0;4,0.8;getitems;Get Items]" ..
 
-    "list[current_player;main;1,5.8;8,4;]" ..
+    "list[current_player;main;1,6.6;8,4;]" ..
+
     "listring[]"
 end
 
