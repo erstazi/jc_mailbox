@@ -13,39 +13,52 @@ local function mailbox_formspec(pos)
     "listring[]"
 end
 
-core.override_item("homedecor:inbox", {
+-- Wait until ALL mods have registered their nodes.
+core.register_on_mods_loaded(function()
 
-  on_rightclick = function(pos, node, clicker, itemstack)
+  if not core.registered_nodes["homedecor:inbox"] then
+    core.log("error", "[jc_mailbox] homedecor:inbox not found!")
+    return
+  end
 
-    local meta = core.get_meta(pos)
-    local owner = meta:get_string("owner")
-    local player = clicker:get_player_name()
+  core.override_item("homedecor:inbox", {
 
-    if player == owner or
-      (core.check_player_privs(player, "protection_bypass")
-      and clicker:get_player_control().aux1) then
+    on_rightclick = function(pos, node, clicker, itemstack)
 
-      core.show_formspec(
-        player,
-        "jc_mailbox:" ..
-        core.pos_to_string(pos),
-        mailbox_formspec(pos)
-      )
-    else
-      -- original insert-only formspec
-      local spos = pos.x .. "," .. pos.y .. "," .. pos.z
+      local meta = core.get_meta(pos)
+      local owner = meta:get_string("owner")
+      local player = clicker:get_player_name()
 
-      core.show_formspec(player,
-        "jc_mailbox_insert",
-        "size[8,9]" ..
-        "list[nodemeta:"..spos..";drop;3.5,2;1,1;]" ..
-        "list[current_player;main;0,5;8,4;]" ..
-        "listring[]")
-    end
+      if player == owner or
+        (core.check_player_privs(player, "protection_bypass")
+        and clicker:get_player_control().aux1) then
 
-    return itemstack
-  end,
-})
+        core.show_formspec(
+          player,
+          "jc_mailbox:" .. core.pos_to_string(pos),
+          mailbox_formspec(pos)
+        )
+
+      else
+        -- Original deposit-only formspec
+        local spos = pos.x .. "," .. pos.y .. "," .. pos.z
+
+        core.show_formspec(
+          player,
+          "jc_mailbox_insert",
+          "size[8,9]" ..
+          "list[nodemeta:"..spos..";drop;3.5,2;1,1;]" ..
+          "list[current_player;main;0,5;8,4;]" ..
+          "listring[]"
+        )
+      end
+
+      return itemstack
+    end,
+  })
+
+  core.log("action", "[jc_mailbox] Mailbox overridden successfully.")
+end)
 
 core.register_on_player_receive_fields(function(player, formname, fields)
 
@@ -76,9 +89,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     local stack = mail:get_stack("main", i)
 
     if not stack:is_empty() then
-
       local leftover = inv:add_item("main", stack)
-
       mail:set_stack("main", i, leftover)
     end
   end
